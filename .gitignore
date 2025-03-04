@@ -1,0 +1,12 @@
+# 忽略 node_modules 目录
+node_modules/
+
+# 忽略所有 .log 文件
+*.log
+
+# 忽略 dist 目录
+dist/
+
+# 忽略编辑器目录和文件
+.vscode/
+!.vscode/extensions.json
