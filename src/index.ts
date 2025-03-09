@@ -1,20 +1,39 @@
-import { Square } from "./core/Square";
+import { SquareGroup } from "./core/SquareGroup";
+import { createTeris } from "./core/Teris";
+import { Shape } from "./core/type";
 import { SquarePageViewer } from "./core/viewer/SquarePageViewer";
 import $ from "jquery";
 
-const sq = new Square();
-sq.viewer = new SquarePageViewer(sq, $("#root"));
+const teris = createTeris({ x: 3, y: 2 });
 
-sq.point = {
-  x: 4,
-  y: 3,
-};
+teris.square.forEach((sq) => {
+  sq.viewer = new SquarePageViewer(sq, $("#root"));
+});
 
-sq.color = "red";
+$("#to-bottom").click(function () {
+  teris.center = {
+    x: teris.center.x,
+    y: teris.center.y + 1,
+  };
+});
 
-// setInterval(() => {
-//   sq.point = {
-//     x: sq.point.x,
-//     y: sq.point.y + 1,
-//   };
-// }, 1000);
+$("#to-top").click(function () {
+  teris.center = {
+    x: teris.center.x,
+    y: teris.center.y - 1,
+  };
+});
+
+$("#to-right").click(function () {
+  teris.center = {
+    x: teris.center.x + 1,
+    y: teris.center.y,
+  };
+});
+
+$("#to-left").click(function () {
+  teris.center = {
+    x: teris.center.x - 1,
+    y: teris.center.y,
+  };
+});
