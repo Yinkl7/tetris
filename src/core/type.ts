@@ -8,4 +8,10 @@ export interface IViewer {
   remove(): void;
 }
 
-export type Shape = Point[]
+export type Shape = Point[];
+
+export enum Direction {
+  LEFT,
+  RIGHT,
+  BOTTOM,
+}

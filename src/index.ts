@@ -1,6 +1,7 @@
 import { SquareGroup } from "./core/SquareGroup";
 import { createTeris } from "./core/Teris";
-import { Shape } from "./core/type";
+import { TerisRule } from "./core/TerisRule";
+import { Direction, Shape } from "./core/type";
 import { SquarePageViewer } from "./core/viewer/SquarePageViewer";
 import $ from "jquery";
 
@@ -11,29 +12,45 @@ teris.square.forEach((sq) => {
 });
 
 $("#to-bottom").click(function () {
-  teris.center = {
-    x: teris.center.x,
-    y: teris.center.y + 1,
-  };
+  // const tp = {
+  //   x: teris.center.x,
+  //   y: teris.center.y + 1,
+  // };
+  // if (TerisRule.canIMove(teris.shape, tp)) {
+  //   teris.center = tp;
+  // }
+  TerisRule.moveDirectly(teris, Direction.BOTTOM);
 });
 
 $("#to-top").click(function () {
-  teris.center = {
+  const tp = {
     x: teris.center.x,
     y: teris.center.y - 1,
   };
+  // if (TerisRule.canIMove(teris.shape, tp)) {
+  //   teris.center = tp;
+  // }
+  TerisRule.move(teris, tp);
 });
 
 $("#to-right").click(function () {
-  teris.center = {
-    x: teris.center.x + 1,
-    y: teris.center.y,
-  };
+  // const tp = {
+  //   x: teris.center.x + 1,
+  //   y: teris.center.y,
+  // };
+  // if (TerisRule.canIMove(teris.shape, tp)) {
+  //   teris.center = tp;
+  // }
+  TerisRule.moveDirectly(teris, Direction.RIGHT);
 });
 
 $("#to-left").click(function () {
-  teris.center = {
-    x: teris.center.x - 1,
-    y: teris.center.y,
-  };
+  // const tp = {
+  //   x: teris.center.x - 1,
+  //   y: teris.center.y,
+  // };
+  // if (TerisRule.canIMove(teris.shape, tp)) {
+  //   teris.center = tp;
+  // }
+  TerisRule.moveDirectly(teris, Direction.LEFT);
 });

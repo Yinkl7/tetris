@@ -29,6 +29,10 @@ export class SquareGroup {
     return this._squares;
   }
 
+  public get shape() {
+    return this._shape;
+  }
+
   public set center(val: Point) {
     this._center = val;
     // TODO
