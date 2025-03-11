@@ -33,18 +33,57 @@ export class SquareGroup {
     return this._shape;
   }
 
-  public set center(val: Point) {
-    this._center = val;
-    // TODO
+  private setSquaresPoint() {
     this._shape.forEach((s, i) => {
       this._squares[i].point = {
-        x: s.x + val.x,
-        y: s.y + val.y,
+        x: s.x + this._center.x,
+        y: s.y + this._center.y,
       };
     });
   }
 
+  public set center(val: Point) {
+    this._center = val;
+    // this._shape.forEach((s, i) => {
+    //   this._squares[i].point = {
+    //     x: s.x + val.x,
+    //     y: s.y + val.y,
+    //   };
+    // });
+    this.setSquaresPoint();
+  }
+
   public get center() {
     return this._center;
+  }
+
+  /**
+   * 是否顺时针旋转
+   */
+  protected isClock = true;
+
+  public afterRotateShape(): Shape {
+    if (this.isClock) {
+      return this._shape.map((p) => {
+        const newPoint: Point = {
+          x: -p.y,
+          y: p.x,
+        };
+        return newPoint;
+      });
+    } else {
+      return this._shape.map((p) => {
+        const newPoint: Point = {
+          x: p.y,
+          y: -p.x,
+        };
+        return newPoint;
+      });
+    }
+  }
+
+  public rotate() {
+    this._shape = this.afterRotateShape();
+    this.setSquaresPoint();
   }
 }

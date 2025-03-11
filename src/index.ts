@@ -54,3 +54,7 @@ $("#to-left").click(function () {
   // }
   TerisRule.moveDirectly(teris, Direction.LEFT);
 });
+
+$("#rotate-clock").click(function () {
+  TerisRule.rotate(teris);
+});
