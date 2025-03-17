@@ -174,7 +174,7 @@ class LineShape extends SquareGroup {
 //   { x: 2, y: 0 },
 // ];
 
-export const colors: string[] = ["red", "#fff", "orange", "blue", "green"];
+export const colors: string[] = ["red", "orange", "blue", "green"];
 
 export const shapes = [
   TShape,
