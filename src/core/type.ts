@@ -1,3 +1,4 @@
+import { Game } from "./Game";
 import { SquareGroup } from "./SquareGroup";
 
 export interface Point {
@@ -36,4 +37,20 @@ export interface GameViewer {
    * @param teris 切换显示方块对象
    */
   switch(teris: SquareGroup): void;
+
+  /**
+   *
+   * @param game
+   */
+  init(game: Game): void;
+
+  showScore(score: number): void;
+}
+
+export enum KeyEvent {
+  down = "ArrowDown",
+  left = "ArrowLeft",
+  right = "ArrowRight",
+  rotate = "KeyJ",
+  space = "Space",
 }

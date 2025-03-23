@@ -21,10 +21,15 @@ export class Game {
   // 积分
   private _score: number = 0;
 
+  get gameStatus() {
+    return this._gameStatus;
+  }
+
   constructor(private _viewer: GameViewer) {
     this._nextTeris = createTeris({ x: 0, y: 0 });
     this.resetCenterPoint(GameConfig.nextSize.width, this._nextTeris);
     this._viewer.showNext(this._nextTeris);
+    this._viewer.init(this);
   }
 
   private createNext() {
@@ -42,6 +47,7 @@ export class Game {
     this._existSquare = [];
     this.createNext();
     this._currentTeris = undefined;
+    this._duration = GameConfig.level[0].duration;
   }
 
   /**
@@ -56,6 +62,7 @@ export class Game {
     }
     this._gameStatus = GameStauts.START;
     this._score = 0;
+    this._viewer.showScore(this._score);
     // 切换方块
     if (!this._currentTeris) {
       this.switchTeris();
@@ -197,6 +204,17 @@ export class Game {
       this._score += 50;
     } else {
       this._score += 100;
+    }
+    this._viewer.showScore(this._score);
+    let level = GameConfig.level
+      .filter((item) => item.score < this._score)
+      .pop();
+    console.log("level=== ", level);
+    if (level && level.duration !== this._duration) {
+      clearInterval(this._timer);
+      this._timer = undefined;
+      this._duration = level.duration;
+      this.autoDrop();
     }
   }
 }
