@@ -7,61 +7,26 @@
 
 import { Game } from "./core/Game";
 import { GamePageViewer } from "./core/viewer/GamePageViewer";
-
-// const teris = createTeris({ x: 3, y: 2 });
-
-// teris.square.forEach((sq) => {
-//   sq.viewer = new SquarePageViewer(sq, $("#root"));
-// });
-
-// $("#to-bottom").click(function () {
-//   // const tp = {
-//   //   x: teris.center.x,
-//   //   y: teris.center.y + 1,
-//   // };
-//   // if (TerisRule.canIMove(teris.shape, tp)) {
-//   //   teris.center = tp;
-//   // }
-//   TerisRule.moveDirectly(teris, Direction.BOTTOM);
-// });
-
-// $("#to-top").click(function () {
-//   const tp = {
-//     x: teris.center.x,
-//     y: teris.center.y - 1,
-//   };
-//   // if (TerisRule.canIMove(teris.shape, tp)) {
-//   //   teris.center = tp;
-//   // }
-//   TerisRule.move(teris, tp);
-// });
-
-// $("#to-right").click(function () {
-//   // const tp = {
-//   //   x: teris.center.x + 1,
-//   //   y: teris.center.y,
-//   // };
-//   // if (TerisRule.canIMove(teris.shape, tp)) {
-//   //   teris.center = tp;
-//   // }
-//   TerisRule.moveDirectly(teris, Direction.RIGHT);
-// });
-
-// $("#to-left").click(function () {
-//   // const tp = {
-//   //   x: teris.center.x - 1,
-//   //   y: teris.center.y,
-//   // };
-//   // if (TerisRule.canIMove(teris.shape, tp)) {
-//   //   teris.center = tp;
-//   // }
-//   TerisRule.moveDirectly(teris, Direction.LEFT);
-// });
-
-// $("#rotate-clock").click(function () {
-//   TerisRule.rotate(teris);
-// });
+import $ from "jquery";
 
 const g = new Game(new GamePageViewer());
 
-g.start();
+$("#to-right").click(function () {
+  g.controlRight();
+});
+$("#to-left").click(function () {
+  g.controlLeft();
+});
+$("#to-bottom").click(function () {
+  g.controlBottom();
+});
+$("#rotate-clock").click(function () {
+  g.controlRotate();
+});
+$("#start").click(function () {
+  g.start();
+});
+// pause
+$("#pause").click(function () {
+  g.pause();
+});

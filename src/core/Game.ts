@@ -1,4 +1,5 @@
 import GameConfig from "./GameConfig";
+import { Square } from "./Square";
 import { SquareGroup } from "./SquareGroup";
 import { createTeris } from "./Teris";
 import { TerisRule } from "./TerisRule";
@@ -10,15 +11,37 @@ export class Game {
   // 当前方块
   private _currentTeris?: SquareGroup;
   // 下一个方块
-  private _nextTeris: SquareGroup = createTeris({ x: 0, y: 0 });
+  private _nextTeris: SquareGroup;
   // 计时器
   private _timer?: NodeJS.Timeout;
   // 下落间隔事件
   private _duration: number = 1000;
+  // 已存在的方块
+  private _existSquare: Square[] = [];
+  // 积分
+  private _score: number = 0;
 
   constructor(private _viewer: GameViewer) {
+    this._nextTeris = createTeris({ x: 0, y: 0 });
     this.resetCenterPoint(GameConfig.nextSize.width, this._nextTeris);
     this._viewer.showNext(this._nextTeris);
+  }
+
+  private createNext() {
+    this._nextTeris = createTeris({ x: 0, y: 0 });
+    this.resetCenterPoint(GameConfig.nextSize.width, this._nextTeris);
+    this._viewer.showNext(this._nextTeris);
+  }
+
+  private init() {
+    this._existSquare.forEach((sq) => {
+      if (sq.viewer) {
+        sq.viewer.remove();
+      }
+    });
+    this._existSquare = [];
+    this.createNext();
+    this._currentTeris = undefined;
   }
 
   /**
@@ -28,8 +51,11 @@ export class Game {
     // 判断状态
     if (this._gameStatus === GameStauts.START) {
       return;
+    } else if (this._gameStatus === GameStauts.OVER) {
+      this.init();
     }
     this._gameStatus = GameStauts.START;
+    this._score = 0;
     // 切换方块
     if (!this._currentTeris) {
       this.switchTeris();
@@ -51,25 +77,31 @@ export class Game {
 
   controlLeft() {
     if (this._currentTeris && this._gameStatus === GameStauts.START) {
-      TerisRule.move(this._currentTeris, Direction.LEFT);
+      TerisRule.move(this._currentTeris, Direction.LEFT, this._existSquare);
     }
   }
 
   controlRight() {
     if (this._currentTeris && this._gameStatus === GameStauts.START) {
-      TerisRule.move(this._currentTeris, Direction.RIGHT);
+      TerisRule.move(this._currentTeris, Direction.RIGHT, this._existSquare);
     }
   }
 
   controlBottom() {
     if (this._currentTeris && this._gameStatus === GameStauts.START) {
-      TerisRule.moveDirectly(this._currentTeris, Direction.BOTTOM);
+      TerisRule.moveDirectly(
+        this._currentTeris,
+        Direction.BOTTOM,
+        this._existSquare
+      );
+      // 触底
+      this.hitBottom();
     }
   }
 
   controlRotate() {
     if (this._currentTeris && this._gameStatus === GameStauts.START) {
-      TerisRule.rotate(this._currentTeris);
+      TerisRule.rotate(this._currentTeris, this._existSquare);
     }
   }
 
@@ -78,10 +110,28 @@ export class Game {
    */
   private switchTeris() {
     this._currentTeris = this._nextTeris;
+    this._currentTeris.square.forEach((sq) => {
+      if (sq.viewer) {
+        sq.viewer.remove();
+      }
+    });
+    this.resetCenterPoint(GameConfig.pannelSize.width, this._currentTeris);
+    // 判断下一个方块是否和之前的方块出现重叠
+    if (
+      !TerisRule.canIMove(
+        this._currentTeris.shape,
+        this._currentTeris.center,
+        this._existSquare
+      )
+    ) {
+      this._gameStatus = GameStauts.OVER;
+      clearInterval(this._timer);
+      this._timer = undefined;
+      return;
+    }
     this._nextTeris = createTeris({ x: 0, y: 0 });
     this.resetCenterPoint(GameConfig.nextSize.width, this._nextTeris);
     this._viewer.switch(this._currentTeris);
-    this.resetCenterPoint(GameConfig.pannelSize.width, this._currentTeris);
     this._viewer.showNext(this._nextTeris);
   }
 
@@ -94,7 +144,16 @@ export class Game {
     }
     this._timer = setInterval(() => {
       if (this._currentTeris) {
-        TerisRule.move(this._currentTeris, Direction.BOTTOM);
+        // 触底
+        if (
+          !TerisRule.move(
+            this._currentTeris,
+            Direction.BOTTOM,
+            this._existSquare
+          )
+        ) {
+          this.hitBottom();
+        }
       }
     }, this._duration);
   }
@@ -104,13 +163,40 @@ export class Game {
     const y = 0;
     teris.center = { x, y };
     while (teris.square.some((sq) => sq.point.y < 0)) {
-      teris.square.forEach(
-        (sq) =>
-          (sq.point = {
-            x: sq.point.x,
-            y: sq.point.y + 1,
-          })
-      );
+      teris.center = {
+        x: teris.center.x,
+        y: teris.center.y + 1,
+      };
+    }
+  }
+
+  /**
+   * 触底操作
+   * 1、保存当前方块
+   * 2、消除处理
+   * 3、胜负判断
+   * 4、切换方块
+   */
+  private hitBottom() {
+    this._existSquare.push(...this._currentTeris!.square);
+
+    const num = TerisRule.deleteSquare(this._existSquare);
+    this.addScore(num);
+    // 切换方块
+    this.switchTeris();
+  }
+
+  private addScore(lineNum: number) {
+    if (lineNum === 0) {
+      return;
+    } else if (lineNum === 1) {
+      this._score += 10;
+    } else if (lineNum === 2) {
+      this._score += 25;
+    } else if (lineNum === 3) {
+      this._score += 50;
+    } else {
+      this._score += 100;
     }
   }
 }
